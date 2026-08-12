@@ -1,0 +1,90 @@
+@model CreateQueryViewModel
+@{
+    ViewData["Title"] = "Report Issue";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Report a Site Issue</h4>
+        <span class="text-muted">Capture a defect or missing item from the field in seconds.</span>
+    </div>
+    <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-clipboard-plus me-2"></i>Query Details</div>
+    <div class="card-body">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="IPO" class="form-label">IPO Number <span class="text-danger">*</span></label>
+                    <input asp-for="IPO" class="form-control" placeholder="e.g. 556" />
+                    <span asp-validation-for="IPO" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ProjectId" class="form-label">Project <span class="text-danger">*</span></label>
+                    <select asp-for="ProjectId" asp-items="Model.Projects" class="form-select">
+                        <option value="">-- Select Project --</option>
+                    </select>
+                    <span asp-validation-for="ProjectId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="IssueType" class="form-label">Issue Type <span class="text-danger">*</span></label>
+                    <select asp-for="IssueType" class="form-select">
+                        @foreach (var t in Enum.GetValues<IssueType>())
+                        {
+                            <option value="@((int)t)">@t</option>
+                        }
+                    </select>
+                    <span asp-validation-for="IssueType" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="QtyNos" class="form-label">Quantity (Nos)</label>
+                    <input asp-for="QtyNos" class="form-control" type="number" step="any" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="QtySqm" class="form-label">Quantity (SQM)</label>
+                    <input asp-for="QtySqm" class="form-control" type="number" step="any" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ProductCodeId" class="form-label">Verified Product Code</label>
+                    <select asp-for="ProductCodeId" asp-items="Model.ProductCodes" class="form-select">
+                        <option value="">-- Optional: Confirm product --</option>
+                    </select>
+                    <div class="form-text">Confirm the exact item via <a asp-controller="Products" asp-action="Index">Product Lookup</a>.</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="SlabTargetDate" class="form-label">Slab Target Casting Date</label>
+                    <input asp-for="SlabTargetDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="SlabCompletedDate" class="form-label">Slab Completed Date</label>
+                    <input asp-for="SlabCompletedDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Photo" class="form-label">Photo Evidence</label>
+                    <input asp-for="Photo" class="form-control" type="file" accept="image/*" />
+                    <div class="form-text">JPG/PNG/WebP up to 5 MB.</div>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Describe the issue found on site..."></textarea>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-send me-1"></i>Submit Query
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

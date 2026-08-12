@@ -1,0 +1,61 @@
+@model QueryEmailViewModel
+@{
+    ViewData["Title"] = "Auto Email Template";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Auto-Generated Email Template</h4>
+        <span class="text-muted">Auto-filled from IPO, project, issue type, and sender. Editable before sending.</span>
+    </div>
+    <a asp-controller="Queries" asp-action="Details" asp-route-id="@Model.QueryId" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Query
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header"><i class="bi bi-info-circle me-2"></i>Auto-Filled Fields</div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="text-muted small">IPO</div>
+                <div class="fw-semibold">@Model.IPO</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small">Project</div>
+                <div class="fw-semibold">@Model.Project</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small">Issue Type</div>
+                <div class="fw-semibold">@Model.IssueType</div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small">Sender</div>
+                <div class="fw-semibold">@Model.Sender</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-envelope me-2"></i>Email Preview</div>
+    <div class="card-body">
+        <form asp-action="Email" method="post">
+            <input type="hidden" asp-for="QueryId" />
+            <div class="mb-3">
+                <label class="form-label">Subject</label>
+                <input asp-for="Subject" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Body</label>
+                <textarea asp-for="Body" class="form-control" rows="16" style="font-family:Consolas,monospace;"></textarea>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-controller="Queries" asp-action="Details" asp-route-id="@Model.QueryId" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check-lg me-1"></i>Confirm &amp; Log
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

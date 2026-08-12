@@ -1,0 +1,116 @@
+@model EotListViewModel
+@{
+    ViewData["Title"] = "EOT Management";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Extension of Time (EOT) Tracker</h4>
+        <span class="text-muted">Policy IFAD-POL-EOT-001 &middot; Design Department</span>
+    </div>
+    <a asp-controller="Eot" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>New EOT
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@Model.Search" class="form-control"
+                           placeholder="EOT No., project name, or client..." />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Submission Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    @foreach (var s in Enum.GetValues<EotSubmissionStatus>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.StatusFilter == s)">@s</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                    <i class="bi bi-filter me-1"></i>Filter
+                </button>
+                <a asp-controller="Eot" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card table-card">
+    <div class="card-header"><i class="bi bi-calendar2-week me-2"></i>@Model.Eots.Count EOT Record(s)</div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>EOT No.</th>
+                    <th>Project Name</th>
+                    <th>Client</th>
+                    <th>Financial Year</th>
+                    <th>Revision</th>
+                    <th>Scenario</th>
+                    <th>SPA Date</th>
+                    <th>Design Rev. Date</th>
+                    <th>Delay (days)</th>
+                    <th>Submission Status</th>
+                    <th>Client Approval</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model.Eots)
+                {
+                    <tr>
+                        <td class="fw-semibold">@e.EotNumber</td>
+                        <td>@e.ProjectName</td>
+                        <td>@e.Client</td>
+                        <td>@(e.FinancialYear ?? "-")</td>
+                        <td>@(e.RevisionNo ?? "-")</td>
+                        <td><span class="badge bg-secondary-subtle text-dark">@e.Scenario</span></td>
+                        <td class="text-muted small">@(e.SpaDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td class="text-muted small">@(e.DesignRevisionDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td>@(e.DelayDays?.ToString() ?? "-")</td>
+                        <td>
+                            @{
+                                var statusColor = e.SubmissionStatus switch
+                                {
+                                    EotSubmissionStatus.Approved => "success",
+                                    EotSubmissionStatus.Submitted => "primary",
+                                    EotSubmissionStatus.InReview => "warning",
+                                    EotSubmissionStatus.Rejected => "danger",
+                                    _ => "secondary"
+                                };
+                            }
+                            <span class="badge text-bg-@statusColor">@e.SubmissionStatus</span>
+                        </td>
+                        <td class="text-muted small">@(e.ClientApproval ?? "-")</td>
+                        <td>
+                            <a asp-controller="Eot" asp-action="Edit" asp-route-id="@e.Id"
+                               class="btn btn-sm btn-icon btn-outline-primary" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Eots.Any())
+                {
+                    <tr>
+                        <td colspan="12" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                            No EOT records found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

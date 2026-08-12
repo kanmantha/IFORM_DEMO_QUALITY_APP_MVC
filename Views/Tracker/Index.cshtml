@@ -1,0 +1,76 @@
+@model TrackerViewModel
+@{
+    ViewData["Title"] = "Site Delivery Tracker";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Site Delivery Tracker</h4>
+        <span class="text-muted">Excel-equivalent view - every tracked column, made live.</span>
+    </div>
+    <a asp-controller="Queries" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Report Issue
+    </a>
+</div>
+
+<div class="card table-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-table me-2"></i>@Model.Rows.Count Record(s)</span>
+        <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Print / Export PDF
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>IPO</th>
+                    <th>Project</th>
+                    <th>Issue</th>
+                    <th>Qty (nos)</th>
+                    <th>Qty (sqm)</th>
+                    <th>Dispatch Status</th>
+                    <th>Slab Target</th>
+                    <th>Slab Completed</th>
+                    <th>Slab Delay</th>
+                    <th>Delay (days)</th>
+                    <th>Raised By</th>
+                    <th>Raised Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model.Rows)
+                {
+                    var delayClass = r.DelayDays >= 30 ? "delay-high" : (r.DelayDays >= 15 ? "delay-medium" : "delay-low");
+                    <tr>
+                        <td class="fw-semibold">@r.IPO</td>
+                        <td>@r.Project</td>
+                        <td><span class="badge-issue badge-@r.Issue">@r.Issue</span></td>
+                        <td>@r.QtyNos</td>
+                        <td>@r.QtySqm</td>
+                        <td><span class="badge-status badge-@r.DispatchStatus">@r.DispatchStatus</span></td>
+                        <td class="text-muted small">@(r.SlabTargetDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td class="text-muted small">@(r.SlabCompletedDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td>@(r.SlabDelayDays?.ToString() ?? "-")</td>
+                        <td><span class="delay-pill @delayClass">@r.DelayDays d</span></td>
+                        <td>@r.RaisedBy</td>
+                        <td class="text-muted small">@r.RaisedAt.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <a asp-controller="Queries" asp-action="Details" asp-route-id="@r.Id"
+                               class="btn btn-sm btn-icon btn-outline-primary" title="Open">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Rows.Any())
+                {
+                    <tr>
+                        <td colspan="13" class="text-center text-muted py-5">No records yet.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

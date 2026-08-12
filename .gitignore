@@ -1,0 +1,19 @@
+## .NET build artifacts
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Runtime
+*.log
+logs/
+
+## Uploaded content (runtime data)
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep
+
+## IDE
+.vs/
+.idea/
+*.swp

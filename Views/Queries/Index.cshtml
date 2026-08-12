@@ -1,0 +1,116 @@
+@model QueryListViewModel
+@{
+    ViewData["Title"] = "Search & Resolve";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Search &amp; Resolve Queries</h4>
+        <span class="text-muted">Find any issue in seconds by IPO, project, or keyword.</span>
+    </div>
+    <a asp-controller="Queries" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Report Issue
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@Model.Search" class="form-control"
+                           placeholder="IPO number, project name, keyword..." />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Issue Type</label>
+                <select name="issueType" class="form-select">
+                    <option value="">All Types</option>
+                    @foreach (var t in Enum.GetValues<IssueType>())
+                    {
+                        <option value="@((int)t)" selected="@(Model.IssueTypeFilter == t)">@t</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    @foreach (var s in Enum.GetValues<QueryStatus>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.StatusFilter == s)">@s</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                    <i class="bi bi-filter me-1"></i>Filter
+                </button>
+                <a asp-controller="Queries" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card table-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-list-check me-2"></i>@Model.Queries.Count Record(s)</span>
+        <span class="text-muted small">Filters combine with AND logic</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Query #</th>
+                    <th>IPO</th>
+                    <th>Project</th>
+                    <th>Issue Type</th>
+                    <th>Qty (nos)</th>
+                    <th>Qty (sqm)</th>
+                    <th>Raised By</th>
+                    <th>Raised On</th>
+                    <th>Delay</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var q in Model.Queries)
+                {
+                    var delayClass = q.DelayDays >= 30 ? "delay-high" : (q.DelayDays >= 15 ? "delay-medium" : "delay-low");
+                    <tr>
+                        <td class="text-muted small">@q.QueryNumber</td>
+                        <td class="fw-semibold">@q.IPO</td>
+                        <td>@q.Project</td>
+                        <td><span class="badge-issue badge-@q.IssueType">@q.IssueType</span></td>
+                        <td>@q.QtyNos</td>
+                        <td>@q.QtySqm</td>
+                        <td>@q.RaisedBy</td>
+                        <td class="text-muted small">@q.RaisedAt.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                        <td><span class="delay-pill @delayClass">@q.DelayDays d</span></td>
+                        <td><span class="badge-status badge-@q.Status">@q.Status</span></td>
+                        <td>
+                            <a asp-controller="Queries" asp-action="Details" asp-route-id="@q.Id"
+                               class="btn btn-sm btn-icon btn-outline-primary" title="Open">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Queries.Any())
+                {
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                            No queries match your search.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,134 @@
+@model EotEditViewModel
+@{
+    ViewData["Title"] = Model.Id.HasValue ? $"Edit {Model.EotNumber}" : "New EOT";
+    var isEdit = Model.Id.HasValue;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">@(isEdit ? $"Edit EOT {Model.EotNumber}" : "New EOT Request")</h4>
+        <span class="text-muted">Per I-FORM EOT Management &amp; Tracking Policy (IFAD-POL-EOT-001)</span>
+    </div>
+    <a asp-controller="Eot" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to List
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-calendar2-plus me-2"></i>EOT Details</div>
+    <div class="card-body">
+        <form asp-action="@(isEdit ? "Edit" : "Create")" method="post">
+            @if (isEdit)
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="ProjectName" class="form-label">Project Name <span class="text-danger">*</span></label>
+                    <input asp-for="ProjectName" class="form-control" placeholder="e.g. Hallmark" />
+                    <span asp-validation-for="ProjectName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Client" class="form-label">Client <span class="text-danger">*</span></label>
+                    <input asp-for="Client" class="form-control" placeholder="e.g. Hallmark Developers" />
+                    <span asp-validation-for="Client" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="FinancialYear" class="form-label">Financial Year</label>
+                    <input asp-for="FinancialYear" class="form-control" placeholder="2026" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="RevisionNo" class="form-label">Revision No.</label>
+                    <input asp-for="RevisionNo" class="form-control" placeholder="Rev. 01" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Scenario" class="form-label">Scenario</label>
+                    <select asp-for="Scenario" class="form-select">
+                        @foreach (var s in Enum.GetValues<EotScenario>())
+                        {
+                            <option value="@((int)s)">@s</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="SubmissionStatus" class="form-label">Submission Status</label>
+                    <select asp-for="SubmissionStatus" class="form-select">
+                        @foreach (var s in Enum.GetValues<EotSubmissionStatus>())
+                        {
+                            <option value="@((int)s)">@s</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="SpaDate" class="form-label">SPA Date</label>
+                    <input asp-for="SpaDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="DesignRevisionDate" class="form-label">Design Revision Date</label>
+                    <input asp-for="DesignRevisionDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="DelayDays" class="form-label">Delay (Days)</label>
+                    <input asp-for="DelayDays" class="form-control" type="number" />
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ChangeProposedBy" class="form-label">Change Proposed By</label>
+                    <select asp-for="ChangeProposedBy" class="form-select">
+                        <option value="">-- Select --</option>
+                        <option>Architect</option>
+                        <option>Structural</option>
+                        <option>MEP</option>
+                        <option>Client</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="CostEscalation" class="form-label">Cost Escalation</label>
+                    <input asp-for="CostEscalation" class="form-control" placeholder="e.g. To be assessed / amount" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ClientApproval" class="form-label">Client Approval</label>
+                    <input asp-for="ClientApproval" class="form-control" placeholder="e.g. Pending / Approved on dd/mm/yyyy" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="OriginalScope" class="form-label">Original Approved Scope</label>
+                    <textarea asp-for="OriginalScope" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="RevisedScope" class="form-label">Revised Scope</label>
+                    <textarea asp-for="RevisedScope" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ScopeVariation" class="form-label">Scope Variation</label>
+                    <textarea asp-for="ScopeVariation" class="form-control" rows="2" placeholder="e.g. +120 sqm addition"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Reference" class="form-label">Reference</label>
+                    <input asp-for="Reference" class="form-control" placeholder="Drawing revision / client email ref" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Reason" class="form-label">Reason</label>
+                    <textarea asp-for="Reason" class="form-control" rows="2" placeholder="Brief description of the EOT reason"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Remarks" class="form-label">Remarks</label>
+                    <textarea asp-for="Remarks" class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a asp-controller="Eot" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check-lg me-1"></i>Save EOT
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

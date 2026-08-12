@@ -1,0 +1,77 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In - I-FORM Quality Portal</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-body">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="brand-icon-lg"><i class="bi bi-archive"></i></div>
+                <h4 class="mb-1 fw-bold">I-FORM Quality Portal</h4>
+                <div class="opacity-75 small">Site Query &amp; Defect Tracking System</div>
+            </div>
+            <div class="login-body-area">
+                <h5 class="fw-semibold mb-1">Welcome back</h5>
+                <p class="text-muted small mb-4">Sign in to continue to your workspace.</p>
+
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty] != null)
+                {
+                    <div class="alert alert-danger py-2 small">
+                        <i class="bi bi-exclamation-triangle me-2"></i>@ViewData.ModelState[string.Empty]?.Errors.FirstOrDefault()?.ErrorMessage
+                    </div>
+                }
+
+                <form asp-action="Login" asp-controller="Account" method="post">
+                    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control" placeholder="you@iform.in" autofocus />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-lock"></i></span>
+                            <input asp-for="Password" class="form-control" placeholder="••••••••" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label small">Keep me signed in</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </button>
+                </form>
+
+                <div class="alert alert-info mt-4 mb-0 py-3 small">
+                    <div class="fw-semibold mb-1"><i class="bi bi-info-circle me-1"></i>Demo accounts</div>
+                    <div>Manager: <code>venkatesh@iform.in</code></div>
+                    <div>Site Engineer: <code>sai@iform.in</code></div>
+                    <div class="mt-1 text-muted">Password for all: <code>Iform@2026</code></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
