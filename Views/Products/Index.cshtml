@@ -48,6 +48,10 @@
     {
         <div class="col-md-6 col-xl-4">
             <div class="card h-100 product-card">
+                <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id" class="product-image-wrap">
+                    <img src="@Url.Action("Image", "Products", new { id = p.Id })"
+                         alt="@p.Name" loading="lazy" class="product-image" />
+                </a>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>

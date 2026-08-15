@@ -58,6 +58,8 @@ public class QueryEmailViewModel
 {
     public int QueryId { get; set; }
 
+    public int TemplateId { get; set; }
+
     public string IPO { get; set; } = string.Empty;
 
     public string Project { get; set; } = string.Empty;
@@ -69,4 +71,10 @@ public class QueryEmailViewModel
     public string Subject { get; set; } = string.Empty;
 
     public string Body { get; set; } = string.Empty;
+
+    public string To { get; set; } = string.Empty;
+
+    public string Cc { get; set; } = string.Empty;
+
+    public List<SelectListItem> Templates { get; set; } = new();
 }

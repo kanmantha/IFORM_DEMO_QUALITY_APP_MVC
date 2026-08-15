@@ -53,9 +53,16 @@
                 </div>
                 <div class="col-md-4">
                     <label asp-for="ProductCodeId" class="form-label">Verified Product Code</label>
-                    <select asp-for="ProductCodeId" asp-items="Model.ProductCodes" class="form-select">
-                        <option value="">-- Optional: Confirm product --</option>
-                    </select>
+                    <div class="input-group">
+                        <select asp-for="ProductCodeId" asp-items="Model.ProductCodes" class="form-select" id="productCodeSelect">
+                            <option value="">-- Optional: Confirm product --</option>
+                        </select>
+                        <span class="input-group-text bg-white product-preview-trigger" title="Hover to zoom">
+                            <img id="productPreview" src="@Url.Action("Image", "Products", new { id = 0, size = 80 })"
+                                 alt="" class="product-thumb d-none" />
+                            <i class="bi bi-image" id="productPreviewPlaceholder"></i>
+                        </span>
+                    </div>
                     <div class="form-text">Confirm the exact item via <a asp-controller="Products" asp-action="Index">Product Lookup</a>.</div>
                 </div>
 
@@ -88,3 +95,28 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var select = document.getElementById('productCodeSelect');
+            var preview = document.getElementById('productPreview');
+            var placeholder = document.getElementById('productPreviewPlaceholder');
+
+            function updatePreview() {
+                var id = select.value;
+                if (id) {
+                    preview.src = '@Url.Action("Image", "Products")?id=' + id + '&size=160';
+                    preview.classList.remove('d-none');
+                    placeholder.classList.add('d-none');
+                } else {
+                    preview.classList.add('d-none');
+                    placeholder.classList.remove('d-none');
+                }
+            }
+
+            select.addEventListener('change', updatePreview);
+            updatePreview();
+        });
+    </script>
+}

@@ -322,7 +322,7 @@ public class QueriesController : Controller
 
     [HttpGet]
     [Authorize(Roles = "Manager,Admin")]
-    public async Task<IActionResult> Email(int id)
+    public async Task<IActionResult> Email(int id, int? templateId)
     {
         var query = await _db.SiteQueries
             .Include(q => q.Project)
@@ -334,17 +334,37 @@ public class QueriesController : Controller
         }
 
         var user = await _userManager.GetUserAsync(User);
-        var rendered = EmailTemplateService.Render(query, user!);
+        var templates = await _db.EmailTemplates
+            .Where(t => t.IsActive)
+            .OrderBy(t => t.IssueType)
+            .ToListAsync();
+
+        var selected = templates.FirstOrDefault(t => t.Id == templateId)
+            ?? templates.FirstOrDefault(t => t.IssueType == query.IssueType)
+            ?? EmailTemplateService.DefaultFor(query.IssueType);
+
+        var rendered = EmailTemplateService.Render(query, user!, selected);
 
         var vm = new QueryEmailViewModel
         {
             QueryId = query.Id,
+            TemplateId = selected.Id,
             IPO = query.IPO,
             Project = query.Project?.Name ?? "-",
             IssueType = query.IssueType.ToString(),
             Sender = user?.FullName ?? string.Empty,
             Subject = rendered.Subject,
-            Body = rendered.Body
+            Body = rendered.Body,
+            To = "office@iform.in",
+            Cc = "sowmya@iform.in",
+            Templates = templates
+                .Select(t => new SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = $"{t.Name} ({t.IssueType})",
+                    Selected = t.Id == selected.Id
+                })
+                .ToList()
         };
 
         ViewData["ActiveMenu"] = "Queries";
@@ -369,14 +389,14 @@ public class QueriesController : Controller
             QueryId = query.Id,
             UserId = user?.Id ?? string.Empty,
             Action = "EmailGenerated",
-            Details = $"Auto email template generated - Subject: {vm.Subject}",
+            Details = $"Auto email template generated - Subject: {vm.Subject}, To: {vm.To}",
             Timestamp = DateTime.UtcNow
         });
 
         query.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
 
-        TempData["Success"] = "Email template generated. A copy has been logged in the audit trail.";
+        TempData["Success"] = "Email template generated and logged in the audit trail. Open your email client to send it.";
         return RedirectToAction(nameof(Details), new { id = query.Id });
     }
 

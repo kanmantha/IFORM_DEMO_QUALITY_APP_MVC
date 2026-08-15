@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="fw-bold mb-1">Auto-Generated Email Template</h4>
-        <span class="text-muted">Auto-filled from IPO, project, issue type, and sender. Editable before sending.</span>
+        <span class="text-muted">Auto-filled from IPO, project, issue type, and sender. Editable before sending (BRD FR-5.3).</span>
     </div>
     <a asp-controller="Queries" asp-action="Details" asp-route-id="@Model.QueryId" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>Back to Query
@@ -40,8 +40,30 @@
 <div class="card">
     <div class="card-header"><i class="bi bi-envelope me-2"></i>Email Preview</div>
     <div class="card-body">
-        <form asp-action="Email" method="post">
+        <form asp-action="Email" method="post" id="emailForm">
             <input type="hidden" asp-for="QueryId" />
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Template Wording (auto-selected by issue type)</label>
+                    <select id="templateSelect" class="form-select">
+                        @foreach (var t in Model.Templates)
+                        {
+                            <option value="@t.Value" data-issue="@t.Text">@t.Text</option>
+                        }
+                    </select>
+                    <div class="form-text">FR-5.2 - each issue type has distinct template wording.</div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">To</label>
+                    <input asp-for="To" class="form-control" placeholder="office@iform.in" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Cc</label>
+                    <input asp-for="Cc" class="form-control" placeholder="optional" />
+                </div>
+            </div>
+
             <div class="mb-3">
                 <label class="form-label">Subject</label>
                 <input asp-for="Subject" class="form-control" />
@@ -50,8 +72,12 @@
                 <label class="form-label">Body</label>
                 <textarea asp-for="Body" class="form-control" rows="16" style="font-family:Consolas,monospace;"></textarea>
             </div>
+
             <div class="d-flex justify-content-end gap-2">
                 <a asp-controller="Queries" asp-action="Details" asp-route-id="@Model.QueryId" class="btn btn-outline-secondary">Cancel</a>
+                <button type="button" class="btn btn-outline-success" id="sendViaClient">
+                    <i class="bi bi-envelope-arrow-up me-1"></i>Send in Email Client
+                </button>
                 <button type="submit" class="btn btn-primary px-4">
                     <i class="bi bi-check-lg me-1"></i>Confirm &amp; Log
                 </button>
@@ -59,3 +85,27 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var templateSelect = document.getElementById('templateSelect');
+            var queryId = @Model.QueryId;
+
+            templateSelect.addEventListener('change', function () {
+                window.location.href = '@Url.Action("Email", "Queries")?id=' + queryId + '&templateId=' + templateSelect.value;
+            });
+
+            document.getElementById('sendViaClient').addEventListener('click', function () {
+                var to = document.querySelector('[name="To"]').value || 'office@iform.in';
+                var cc = document.querySelector('[name="Cc"]').value || '';
+                var subject = document.querySelector('[name="Subject"]').value || '';
+                var body = document.querySelector('[name="Body"]').value || '';
+                var mailto = 'mailto:' + encodeURIComponent(to)
+                    + (cc ? '?cc=' + encodeURIComponent(cc) + '&subject=' + encodeURIComponent(subject) : '?subject=' + encodeURIComponent(subject))
+                    + '&body=' + encodeURIComponent(body);
+                window.location.href = mailto;
+            });
+        });
+    </script>
+}

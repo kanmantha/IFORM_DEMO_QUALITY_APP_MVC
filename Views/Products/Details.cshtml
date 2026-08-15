@@ -16,6 +16,14 @@
 <div class="card">
     <div class="card-body">
         <div class="row g-3">
+    <div class="col-md-4">
+        <div class="product-image-wrap product-image-lg mb-3">
+            <img src="@Url.Action("Image", "Products", new { id = Model.Id, size = 600 })"
+                 alt="@Model.Name" loading="lazy" class="product-image" />
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="row g-3">
             <div class="col-md-3">
                 <div class="text-muted small">Code</div>
                 <div class="fw-semibold fs-5" style="color:var(--primary);">@Model.Code</div>
@@ -52,5 +60,7 @@
                 </div>
             }
         </div>
+    </div>
+</div>
     </div>
 </div>

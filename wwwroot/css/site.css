@@ -315,6 +315,53 @@ body {
 .delay-medium { background: #f59e0b; color: #fff; }
 .delay-low { background: #16a34a; color: #fff; }
 
+/* ---------- Product images with hover zoom ---------- */
+.product-image-wrap {
+    display: block;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--card-border);
+    background: #f1f5f9;
+    cursor: pointer;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.product-image-wrap:hover .product-image {
+    transform: scale(1.15);
+}
+
+.product-image-lg {
+    height: 340px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+}
+
+.product-image-lg .product-image {
+    object-fit: contain;
+}
+
+/* Small preview thumb next to the product dropdown */
+.product-thumb {
+    width: 34px;
+    height: 34px;
+    object-fit: cover;
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+}
+
+.product-preview-trigger:hover .product-thumb {
+    transform: scale(2.2);
+    z-index: 5;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
 /* ---------- Tables ---------- */
 .table-card {
     overflow: hidden;
