@@ -220,7 +220,7 @@
             }
         });
 
-        const mobileUrl = 'https://localhost:7218/Account/Login?ReturnUrl=%2F';
+        const mobileUrl = window.location.origin + '/Account/Login?ReturnUrl=%2F';
         const qrModal = document.getElementById('qrModal');
         qrModal.addEventListener('shown.bs.modal', function () {
             document.getElementById('qrCode').innerHTML = '';

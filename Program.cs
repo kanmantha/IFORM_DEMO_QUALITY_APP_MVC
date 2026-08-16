@@ -1,6 +1,7 @@
 using IFormQualityApp.Data;
 using IFormQualityApp.Models.Entities;
 using IFormQualityApp.Services;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,7 +47,18 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddAuthorization();
 
+// Trust the reverse proxy (Render terminates TLS). Required so
+// UseHttpsRedirection and cookie security see the original scheme.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 // Seed database on startup. Fail fast with a clear message so hosting providers
 // (Azure App Service) surface the real cause instead of hanging on a dead DB.
