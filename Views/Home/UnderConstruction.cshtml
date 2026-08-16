@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = ViewData["ModuleName"]?.ToString() ?? "Module";
+}
+
+<div class="text-center py-5 under-construction">
+    <div class="uc-icon"><i class="bi bi-cone-striped"></i></div>
+    <h3 class="fw-bold mb-2">@ViewData["ModuleName"]</h3>
+    <h5 class="text-muted mb-3">Site Under Construction</h5>
+    <p class="text-muted mx-auto mb-4" style="max-width: 420px;">
+        This module is currently being built. Please check back soon.
+    </p>
+    <a asp-controller="Home" asp-action="Home" class="btn btn-primary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Home
+    </a>
+</div>

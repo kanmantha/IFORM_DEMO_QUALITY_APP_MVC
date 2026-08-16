@@ -21,6 +21,10 @@
 
             <nav class="sidebar-nav">
                 <div class="nav-section">MAIN</div>
+                <a class="nav-link @(ViewData["ActiveMenu"]?.ToString() == "Home" ? "active" : "")"
+                   asp-controller="Home" asp-action="Home">
+                    <i class="bi bi-house-door"></i><span>Home</span>
+                </a>
                 <a class="nav-link @(ViewData["ActiveMenu"]?.ToString() == "Dashboard" ? "active" : "")"
                    asp-controller="Home" asp-action="Index">
                     <i class="bi bi-speedometer2"></i><span>Dashboard</span>

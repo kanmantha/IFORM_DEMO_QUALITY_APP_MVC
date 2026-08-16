@@ -75,6 +75,19 @@ public class HomeController : Controller
         return View(vm);
     }
 
+    public IActionResult Home()
+    {
+        ViewData["ActiveMenu"] = "Home";
+        return View();
+    }
+
+    public IActionResult UnderConstruction(string module)
+    {
+        ViewData["ActiveMenu"] = "Home";
+        ViewData["ModuleName"] = module;
+        return View();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
