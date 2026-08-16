@@ -5,7 +5,7 @@ services:
     repo: https://github.com/kanmantha/IFORM_DEMO_QUALITY_APP_MVC
     plan: free
     branch: main
-    healthCheckPath: /
+    healthCheckPath: /health
     autoDeploy: true
     envVars:
       - key: ConnectionStrings__DefaultConnection
@@ -20,7 +20,7 @@ services:
     repo: https://github.com/kanmantha/IFORM_DEMO_QUALITY_APP_MVC
     plan: free
     branch: main
-    healthCheckPath: /
+    healthCheckPath: /health
     autoDeploy: true
     envVars:
       - key: ConnectionStrings__DefaultConnection
