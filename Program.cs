@@ -123,7 +123,7 @@ static string NormalizePostgresConnectionString(string value)
     var builder = new Npgsql.NpgsqlConnectionStringBuilder
     {
         Host = uri.Host,
-        Port = uri.Port,
+        Port = uri.Port > 0 ? uri.Port : 5432,
         Database = uri.AbsolutePath.TrimStart('/')
     };
 
@@ -139,6 +139,7 @@ static string NormalizePostgresConnectionString(string value)
 
     // Preserve any query-string options (e.g. ?sslmode=require)
     var query = uri.Query.TrimStart('?');
+    var hasSslMode = false;
     if (!string.IsNullOrEmpty(query))
     {
         foreach (var pair in query.Split('&', StringSplitOptions.RemoveEmptyEntries))
@@ -149,12 +150,19 @@ static string NormalizePostgresConnectionString(string value)
             {
                 case "sslmode":
                     builder.SslMode = Enum.Parse<Npgsql.SslMode>(kv[1], ignoreCase: true);
+                    hasSslMode = true;
                     break;
                 case "sslrootcert":
                     builder.RootCertificate = kv[1];
                     break;
             }
         }
+    }
+
+    // Render Postgres requires TLS. If the URI didn't say, default to Require.
+    if (!hasSslMode)
+    {
+        builder.SslMode = Npgsql.SslMode.Require;
     }
 
     return builder.ConnectionString;
