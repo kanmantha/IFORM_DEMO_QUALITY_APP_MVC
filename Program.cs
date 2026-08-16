@@ -6,11 +6,21 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Resolve the PostgreSQL connection string from Azure App Settings / environment
+// (e.g. "ConnectionStrings__DefaultConnection" or "DATABASE_URL"), falling back to
+// appsettings.json for local development.
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection") ??
+    Environment.GetEnvironmentVariable("DATABASE_URL") ??
+    throw new InvalidOperationException(
+        "No database connection string configured. Set the 'ConnectionStrings__DefaultConnection' " +
+        "app setting (or DATABASE_URL) in your host before starting the app.");
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     {
@@ -38,11 +48,22 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Seed database on startup
+// Seed database on startup. Fail fast with a clear message so hosting providers
+// (Azure App Service) surface the real cause instead of hanging on a dead DB.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await DbSeeder.SeedAsync(services);
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        await DbSeeder.SeedAsync(services);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Database initialization failed. Verify the connection string and that the host can reach PostgreSQL.");
+        throw;
+    }
 }
 
 // Configure the HTTP request pipeline.

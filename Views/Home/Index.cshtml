@@ -9,6 +9,9 @@
         <span class="text-muted">Live status of all site queries, updated in real time.</span>
     </div>
     <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#qrModal" title="Mobile QR Code">
+            <i class="bi bi-qr-code me-1"></i>QR
+        </button>
         <a asp-controller="Queries" asp-action="Create" class="btn btn-primary">
             <i class="bi bi-plus-circle me-1"></i>Report Issue
         </a>
@@ -171,8 +174,28 @@
     </div>
 </div>
 
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrModalLabel"><i class="bi bi-qr-code me-2"></i>Scan to Open Mobile App</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="qrCode" class="d-inline-block p-3 border rounded bg-white mb-3"></div>
+                <div class="small text-muted">Scan with your phone camera to open the login page.</div>
+                <div id="qrUrl" class="small text-break mt-1" style="word-break:break-all;"></div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/js/chart.min.js"></script>
+    <script src="~/js/qrcode.min.js"></script>
     <script>
         const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OpenByIssueType.Keys.Select(k => k.ToString())));
         const values = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OpenByIssueType.Values.ToArray()));
@@ -195,6 +218,21 @@
                     legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14 } }
                 }
             }
+        });
+
+        const mobileUrl = 'https://localhost:7218/Account/Login?ReturnUrl=%2F';
+        const qrModal = document.getElementById('qrModal');
+        qrModal.addEventListener('shown.bs.modal', function () {
+            document.getElementById('qrCode').innerHTML = '';
+            document.getElementById('qrUrl').textContent = mobileUrl;
+            new QRCode(document.getElementById('qrCode'), {
+                text: mobileUrl,
+                width: 220,
+                height: 220,
+                colorDark: '#1e293b',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
         });
     </script>
 }
