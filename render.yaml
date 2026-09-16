@@ -10,12 +10,12 @@ services:
     envVars:
       - key: ConnectionStrings__DefaultConnection
         fromDatabase:
-          name: iform-quality-db
+          name: iform-recovery-db
           property: connectionString
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: APP_RELEASE
-        value: "2026-08-16-1"
+        value: "2026-09-16-1"
   - type: web
     name: iform-web
     runtime: docker
@@ -27,15 +27,15 @@ services:
     envVars:
       - key: ConnectionStrings__DefaultConnection
         fromDatabase:
-          name: iform-quality-db
+          name: iform-recovery-db
           property: connectionString
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: APP_RELEASE
-        value: "2026-08-16-1"
+        value: "2026-09-16-1"
 
 databases:
-  - name: iform-quality-db
+  - name: iform-recovery-db
     plan: free
-    databaseName: iform_quality
+    databaseName: iform_quality_qkdu
     user: iform_admin
