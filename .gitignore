@@ -9,6 +9,10 @@ obj/
 *.log
 logs/
 
+## Database backups
+tools/backups/
+*.dump
+
 ## Uploaded content (runtime data)
 wwwroot/uploads/*
 !wwwroot/uploads/.gitkeep
