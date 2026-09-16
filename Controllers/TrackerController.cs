@@ -1,6 +1,7 @@
 using IFormQualityApp.Data;
 using IFormQualityApp.Models.Entities;
 using IFormQualityApp.Models.ViewModels;
+using IFormQualityApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,10 @@ public class TrackerController : Controller
                 DelayDays = q.Status == QueryStatus.Resolved
                     ? ((q.ResolvedAt ?? q.RaisedAt).Date - q.RaisedAt.Date).Days
                     : (now - q.RaisedAt.Date).Days,
+                DelayOver7 = q.Status != QueryStatus.Resolved &&
+                             (now - q.RaisedAt.Date).Days > DelayAlertHelper.WarningDays,
+                DelayOver30 = q.Status != QueryStatus.Resolved &&
+                              (now - q.RaisedAt.Date).Days > DelayAlertHelper.CriticalDays,
                 SlabTargetDate = q.SlabTargetDate,
                 SlabCompletedDate = q.SlabCompletedDate,
                 SlabDelayDays = q.SlabDelayDays,
@@ -45,7 +50,15 @@ public class TrackerController : Controller
             })
             .ToListAsync();
 
-        var vm = new TrackerViewModel { Rows = rows };
+        var vm = new TrackerViewModel
+        {
+            Rows = rows,
+            DelayAlerts = new DelayAlertSummary
+            {
+                WarningCount = rows.Count(r => r.DelayOver7 && !r.DelayOver30),
+                CriticalCount = rows.Count(r => r.DelayOver30)
+            }
+        };
         ViewData["ActiveMenu"] = "Tracker";
         return View(vm);
     }

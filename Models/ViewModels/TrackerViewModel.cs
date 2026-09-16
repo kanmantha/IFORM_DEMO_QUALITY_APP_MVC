@@ -9,6 +9,8 @@ public class TrackerRowViewModel
     public string Issue { get; set; } = string.Empty;
     public string DispatchStatus { get; set; } = string.Empty;
     public int DelayDays { get; set; }
+    public bool DelayOver7 { get; set; }
+    public bool DelayOver30 { get; set; }
     public DateTime? SlabTargetDate { get; set; }
     public DateTime? SlabCompletedDate { get; set; }
     public int? SlabDelayDays { get; set; }
@@ -21,4 +23,6 @@ public class TrackerRowViewModel
 public class TrackerViewModel
 {
     public List<TrackerRowViewModel> Rows { get; set; } = new();
+
+    public DelayAlertSummary DelayAlerts { get; set; } = new();
 }

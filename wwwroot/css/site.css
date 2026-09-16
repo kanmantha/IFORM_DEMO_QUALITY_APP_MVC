@@ -315,6 +315,32 @@ body {
 .delay-medium { background: #f59e0b; color: #fff; }
 .delay-low { background: #16a34a; color: #fff; }
 
+/* ---------- Delay alert badges (7-day warning / 30-day critical) ---------- */
+.delay-alert-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 12px;
+    border: 1px solid;
+    white-space: nowrap;
+}
+
+.delay-alert-warning {
+    background: #fffbeb;
+    color: #b45309;
+    border-color: #fcd34d;
+}
+
+.delay-alert-critical {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fca5a5;
+}
+
 /* ---------- Product images with hover zoom ---------- */
 .product-image-wrap {
     display: block;

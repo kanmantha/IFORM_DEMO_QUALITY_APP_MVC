@@ -1,0 +1,110 @@
+@model List<UserListViewModel>
+@{
+    ViewData["Title"] = "User Management";
+}
+
+@functions {
+    static string Initials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "?";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length >= 2 ? $"{parts[0][0]}{parts[^1][0]}" : name[..Math.Min(2, name.Length)];
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">User Management</h4>
+        <span class="text-muted">Manage users and their roles</span>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-person-plus me-1"></i>Add User
+    </a>
+</div>
+
+<div class="card table-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-people me-2"></i>@Model.Count User(s)</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Employee Code</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="@(!item.User.IsActive ? "table-secondary" : "")">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">
+                                    @Initials(item.User.FullName)
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">@item.User.FullName</div>
+                                    <div class="text-muted small">@item.User.Email</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@(item.User.EmployeeCode ?? "—")</td>
+                        <td>@(item.User.Department ?? "—")</td>
+                        <td>
+                            <form asp-action="ChangeRole" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@item.User.Id" />
+                                <select name="role" class="form-select form-select-sm" style="width:auto;" onchange="if(confirm('Change role for @(item.User.FullName)?')) this.form.submit();">
+                                    @foreach (var r in new[] { "Admin", "Manager", "SiteEngineer" })
+                                    {
+                                        <option value="@r" selected="@(item.CurrentRole == r)">@r</option>
+                                    }
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            @if (item.User.IsActive)
+                            {
+                                <span class="badge bg-success bg-opacity-10 text-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger bg-opacity-10 text-danger">Inactive</span>
+                            }
+                        </td>
+                        <td class="text-muted small">@item.User.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <form asp-action="ToggleActive" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@item.User.Id" />
+                                    <button type="submit" class="btn btn-sm @(item.User.IsActive ? "btn-outline-warning" : "btn-outline-success")"
+                                            title="@(item.User.IsActive ? "Deactivate" : "Activate")">
+                                        <i class="bi @(item.User.IsActive ? "bi-person-slash" : "bi-person-check")"></i>
+                                    </button>
+                                </form>
+                                <form asp-action="Delete" method="post" class="d-inline"
+                                      onsubmit="return confirm('Delete user @(item.User.FullName)? This cannot be undone.');">
+                                    <input type="hidden" name="id" value="@item.User.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">No users found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

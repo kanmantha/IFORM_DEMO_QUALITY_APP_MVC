@@ -13,9 +13,24 @@ public class DashboardViewModel
     public int AvgOpenDays { get; set; }
     public int MaxOpenDays { get; set; }
 
+    public DelayAlertSummary DelayAlerts { get; set; } = new();
+
     public List<QueryRowViewModel> OpenDelays { get; set; } = new();
 
     public Dictionary<IssueType, int> OpenByIssueType { get; set; } = new();
+}
+
+public class DelayAlertSummary
+{
+    /// <summary>Open queries delayed over 7 days (not yet past 30 days).</summary>
+    public int WarningCount { get; set; }
+
+    /// <summary>Open queries delayed over 30 days (auto email triggered).</summary>
+    public int CriticalCount { get; set; }
+
+    public bool HasWarnings => WarningCount > 0;
+
+    public bool HasCritical => CriticalCount > 0;
 }
 
 public class QueryRowViewModel
@@ -29,6 +44,8 @@ public class QueryRowViewModel
     public string RaisedBy { get; set; } = string.Empty;
     public DateTime RaisedAt { get; set; }
     public int DelayDays { get; set; }
+    public bool DelayOver7 { get; set; }
+    public bool DelayOver30 { get; set; }
     public decimal QtyNos { get; set; }
     public decimal QtySqm { get; set; }
 }

@@ -76,6 +76,10 @@ public class QueriesController : Controller
                 DelayDays = q.Status == QueryStatus.Resolved
                     ? ((q.ResolvedAt ?? q.RaisedAt).Date - q.RaisedAt.Date).Days
                     : (DateTime.UtcNow.Date - q.RaisedAt.Date).Days,
+                DelayOver7 = q.Status != QueryStatus.Resolved &&
+                             (DateTime.UtcNow.Date - q.RaisedAt.Date).Days > DelayAlertHelper.WarningDays,
+                DelayOver30 = q.Status != QueryStatus.Resolved &&
+                              (DateTime.UtcNow.Date - q.RaisedAt.Date).Days > DelayAlertHelper.CriticalDays,
                 QtyNos = q.QtyNos,
                 QtySqm = q.QtySqm
             })
@@ -87,7 +91,12 @@ public class QueriesController : Controller
             IssueTypeFilter = issueType,
             StatusFilter = status,
             IsManager = isManager,
-            Queries = list
+            Queries = list,
+            DelayAlerts = new DelayAlertSummary
+            {
+                WarningCount = list.Count(q => q.DelayOver7 && !q.DelayOver30),
+                CriticalCount = list.Count(q => q.DelayOver30)
+            }
         };
 
         ViewData["ActiveMenu"] = "Queries";

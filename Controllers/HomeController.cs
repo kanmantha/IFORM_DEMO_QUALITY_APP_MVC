@@ -2,6 +2,7 @@ using IFormQualityApp.Data;
 using IFormQualityApp.Models;
 using IFormQualityApp.Models.Entities;
 using IFormQualityApp.Models.ViewModels;
+using IFormQualityApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,10 @@ public class HomeController : Controller
             .Select(q => (now - q.RaisedAt.Date).Days)
             .ToList();
 
+        var openRows = queries
+            .Where(q => q.Status != QueryStatus.Resolved)
+            .ToList();
+
         var vm = new DashboardViewModel
         {
             TotalQueries = queries.Count,
@@ -40,7 +45,12 @@ public class HomeController : Controller
             ActiveProjects = await _db.Projects.CountAsync(p => p.IsActive),
             ProductCount = await _db.Products.CountAsync(p => p.IsActive),
             MaxOpenDays = openDays.DefaultIfEmpty(0).Max(),
-            AvgOpenDays = openDays.Count > 0 ? (int)Math.Round(openDays.Average()) : 0
+            AvgOpenDays = openDays.Count > 0 ? (int)Math.Round(openDays.Average()) : 0,
+            DelayAlerts = new DelayAlertSummary
+            {
+                WarningCount = openRows.Count(q => DelayAlertHelper.IsWarning(DelayAlertHelper.DelayDays(q, now))),
+                CriticalCount = openRows.Count(q => DelayAlertHelper.IsCritical(DelayAlertHelper.DelayDays(q, now)))
+            }
         };
 
         vm.OpenDelays = queries
@@ -58,6 +68,9 @@ public class HomeController : Controller
                 RaisedBy = q.RaisedBy?.FullName ?? "-",
                 RaisedAt = q.RaisedAt,
                 DelayDays = (now - q.RaisedAt.Date).Days,
+                DelayOver7 = DelayAlertHelper.IsWarning((now - q.RaisedAt.Date).Days) ||
+                             DelayAlertHelper.IsCritical((now - q.RaisedAt.Date).Days),
+                DelayOver30 = DelayAlertHelper.IsCritical((now - q.RaisedAt.Date).Days),
                 QtyNos = q.QtyNos,
                 QtySqm = q.QtySqm
             })

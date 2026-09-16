@@ -40,6 +40,8 @@ public class QueryListViewModel
 
     public bool IsManager { get; set; }
 
+    public DelayAlertSummary DelayAlerts { get; set; } = new();
+
     public List<QueryRowViewModel> Queries { get; set; } = new();
 }
 

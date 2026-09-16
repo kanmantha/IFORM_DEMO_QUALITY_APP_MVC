@@ -49,6 +49,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddAuthorization();
 
+// Periodically check for queries delayed over 7 days (alert) and over 30 days
+// (auto-email logged to the audit trail).
+builder.Services.AddHostedService<DelayAlertHostedService>();
+
 // Trust the reverse proxy (Render terminates TLS). Required so
 // UseHttpsRedirection and cookie security see the original scheme.
 builder.Services.Configure<ForwardedHeadersOptions>(options =>

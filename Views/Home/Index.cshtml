@@ -18,6 +18,27 @@
     </div>
 </div>
 
+@if (Model.DelayAlerts.HasCritical)
+{
+    <div class="alert alert-danger d-flex align-items-center mb-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+        <div>
+            <strong>@Model.DelayAlerts.CriticalCount open quer@(Model.DelayAlerts.CriticalCount == 1 ? "y" : "ies") delayed over 30 days.</strong>
+            Auto email generated to managers. Click <a asp-controller="Tracker" asp-action="Index" class="alert-link">Tracker</a> to act now.
+        </div>
+    </div>
+}
+@if (Model.DelayAlerts.HasWarnings)
+{
+    <div class="alert alert-warning d-flex align-items-center mb-2" role="alert">
+        <i class="bi bi-exclamation-triangle me-2 fs-5"></i>
+        <div>
+            <strong>@Model.DelayAlerts.WarningCount open quer@(Model.DelayAlerts.WarningCount == 1 ? "y" : "ies") delayed over 7 days.</strong>
+            Requires manager attention - review in <a asp-controller="Tracker" asp-action="Index" class="alert-link">Tracker</a>.
+        </div>
+    </div>
+}
+
 <div class="row g-3 mb-4">
     <div class="col-6 col-xl-2">
         <div class="stat-card">
@@ -107,7 +128,17 @@
                                 <td>@q.Project</td>
                                 <td><span class="badge-issue badge-@q.IssueType">@q.IssueType</span></td>
                                 <td>@q.RaisedBy</td>
-                                <td><span class="delay-pill @delayClass">@q.DelayDays d</span></td>
+                                <td>
+                                    <span class="delay-pill @delayClass">@q.DelayDays d</span>
+                                    @if (q.DelayOver30)
+                                    {
+                                        <span class="delay-alert-badge delay-alert-critical" title="Critical delay - over 30 days, email sent to managers"><i class="bi bi-exclamation-triangle-fill"></i> 30d+</span>
+                                    }
+                                    else if (q.DelayOver7)
+                                    {
+                                        <span class="delay-alert-badge delay-alert-warning" title="Warning - over 7 days"><i class="bi bi-exclamation-triangle"></i> 7d+</span>
+                                    }
+                                </td>
                                 <td><span class="badge-status badge-@q.Status">@q.Status</span></td>
                                 <td>
                                     <a asp-controller="Queries" asp-action="Details" asp-route-id="@q.Id"
