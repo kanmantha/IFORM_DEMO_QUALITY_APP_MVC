@@ -11,12 +11,14 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Render free-tier instances have limited memory and a tiny /dev/shm.
+# Render free-tier instances have limited memory (512MB) and a tiny /dev/shm.
 # Server GC can segfault (exit 139) under those conditions, so force
-# workstation GC and cap the heap to fit within the 512MB limit.
+# workstation GC, cap the heap well below the instance limit, and disable
+# tiered compilation to keep JIT memory and peak working set small.
 ENV DOTNET_gcServer=0
-ENV DOTNET_GCHeapHardLimit=0x1C000000
+ENV DOTNET_GCHeapHardLimit=0x10000000
 ENV DOTNET_GCHeapCount=1
+ENV DOTNET_TieredCompilation=0
 ENV DOTNET_EnableDiagnostics=0
 
 ENV ASPNETCORE_URLS=http://+:${PORT:-10000}
